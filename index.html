@@ -14,6 +14,10 @@
   <div class="title-theme">
     <h1>Todo</h1>
   </div>
+  <div class="myTodos">
+    <ul class="todo-list" id="active">
+    </ul>
+  </div>
   <div class="todosInput">
     <div id="mark">
     <div class="form" data-new-todo-form>
@@ -21,7 +25,7 @@
     </div>
   </div>
   <div class="myTodos">
-    <ul class="todo-list">
+    <ul class="todo-list" id="comp">
     </ul>
   </div>
   <div class="controls">
@@ -37,6 +41,17 @@
     <p class="AllClear">Clear Completed</p>
   </div>
 </div>
+</div>
+<div class="modal">
+  <div class="modal__body">
+    <div class="modal__content">
+  <div class="modal__text"></div>
+      <div class="but">
+  <button id="yes" class="button">YES</button>
+  <button id="no" class="button">NO</button>
+      </div>
+    </div>
+  </div>
 </div>
 <script src="main.js"></script>
 </body>

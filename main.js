@@ -18,6 +18,8 @@ const card = (t) => {
 
 let taskList = [];
 const inp = document.querySelector('#todos');
+let indexForTask;
+const modal = document.querySelector('.modal');
 
 function onCreateTask(event) {
   if (event.key !== 'Enter') {
@@ -36,10 +38,19 @@ function onCreateTask(event) {
   }
 }
 function renderTasks(localTasks = []) {
-  const $tasks = document.querySelector('.todo-list');
-  if (localTasks.length >= 0) {
-    $tasks.innerHTML = localTasks.map(t => card(t)).join(' ');
-    counter();
+  const $tasks = document.querySelector('#active');
+  const compTask =document.querySelector('#comp');
+  if (localTasks.length >= 0 ) {
+    const activeTask = taskList.filter(task => !task.completed);
+    if (activeTask.length >= 0){
+      $tasks.innerHTML = activeTask.map(t => card(t)).join(' ');
+      counter();
+    }
+    const cTask = taskList.filter(task => task.completed);
+    if (cTask.length !== 0) {
+      compTask.innerHTML = cTask.map(t => card(t)).join(' ');
+      counter();
+    }
   }
 }
 function checkClickField(e) {
@@ -64,12 +75,21 @@ function onCompleteTask(e) {
   renderTasks(taskList);
 }
 function onDeleteTask(e) {
+  const text = document.querySelector('.modal__text');
   const id = e.target.getAttribute('data-id');
-  const i = taskList.findIndex((t) => t.id === +id);
-  if (i !== -1) {
-    taskList.splice(i, 1);
-    renderTasks(taskList);
+  indexForTask = taskList.findIndex((t) => t.id === +id);
+  if (indexForTask !== -1) {
+    modal.classList.add("open");
+    text.innerHTML = (`Are you sure you want to delete task "${taskList[indexForTask].description}" ?`);
   }
+}
+function DeleteTask(){
+      taskList.splice(indexForTask, 1);
+      renderTasks(taskList);
+      modal.classList.remove("open");
+}
+function noDeleteTask() {
+  modal.classList.remove("open");
 }
  function sortingAllToDo() {
    renderTasks(taskList);
@@ -130,5 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('itemActive').addEventListener('click', sortingActiveToDo);
   document.getElementById('itemCompleted').addEventListener('click', sortingCompToDo);
   document.getElementById('itemAlphabet').addEventListener('click', sortingAlphabet);
+  document.getElementById('yes').addEventListener('click', DeleteTask);
+  document.getElementById('no').addEventListener('click', noDeleteTask);
 
 });
