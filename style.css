@@ -18,7 +18,7 @@ span {
     color: white;
 }
 #todos {
-    width: 585px;
+    width: 685px;
     font-size: 30px;
     padding: 6px 0px 4px 10px;
     border: 1px solid #cecece;
@@ -26,7 +26,7 @@ span {
     border-radius: 4px;
 }
 .container {
-    max-width: 600px;
+    max-width: 700px;
     margin: 0px auto;
     min-height:100vh;
 }

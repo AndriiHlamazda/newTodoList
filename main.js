@@ -1,4 +1,3 @@
-
 const card = (t) => {
   return `
    <li data-id="${t.id}" class="line">
@@ -9,7 +8,7 @@ const card = (t) => {
             class="tick"
             data-id="${t.id}"
             >
-            <span class="${t.completed ? 'description-completed' : ''}">${t.description}</span>
+            <span data-id="${t.id}" class="task-title ${t.completed ? 'description-completed' : ''}" contentEditable="${t.contentEditable}">${t.description}</span>
         </div>
         <i class="material-icons" data-id="${t.id}">clear</i>
     </li>
@@ -31,6 +30,7 @@ function onCreateTask(event) {
       description: inputTask,
       id: Date.now(),
       completed: false,
+      contentEditable: false,
     };
     taskList.unshift(newTask);
     inp.value = '';
@@ -39,20 +39,66 @@ function onCreateTask(event) {
 }
 function renderTasks(localTasks = []) {
   const $tasks = document.querySelector('#active');
-  const compTask =document.querySelector('#comp');
+  const compTask = document.querySelector('#comp');
   if (localTasks.length >= 0 ) {
     const activeTask = taskList.filter(task => !task.completed);
     if (activeTask.length >= 0){
       $tasks.innerHTML = activeTask.map(t => card(t)).join(' ');
-      counter();
+  //    counter();
+      interestDoneTask();
     }
     const cTask = taskList.filter(task => task.completed);
-    if (cTask.length !== 0) {
+    if (cTask.length >= 0) {
       compTask.innerHTML = cTask.map(t => card(t)).join(' ');
-      counter();
+ //     counter();
+      interestDoneTask();
     }
   }
 }
+function onEditingTask(e) {
+  if (e.target.tagName === 'SPAN') {
+    const id = e.target.getAttribute('data-id');
+    const i = taskList.findIndex(t => t.id === +id);
+    if (i !== -1) {
+      taskList[i].contentEditable = "true";
+    }
+  }
+  renderTasks(taskList);
+  const focusTask = document.querySelector('span[contentEditable="true"]');
+  focusTask.focus();
+  focusTask.addEventListener('keyup', enterEditingTask);
+}
+
+   function enterEditingTask(event) {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+      const focusTask = document.querySelector('span[contentEditable="true"]');
+      const id = event.target.getAttribute('data-id');
+      const i = taskList.findIndex(t => t.id === +id);
+       if (i !== -1) {
+        taskList[i].description = focusTask.innerHTML;
+        taskList[i].contentEditable = "false";
+       }
+        renderTasks(taskList);
+    }
+  }
+function checkCompleteField(e) {
+  if (e.target.tagName === 'I') {
+    onDeleteTask(e);
+  }
+  if (e.target.tagName === 'INPUT') {
+    ofCompleteTask(e);
+  }
+}
+function ofCompleteTask(e) {
+  const id = e.target.getAttribute('data-id');
+  const i = taskList.findIndex(t => t.id === +id);
+  if (i !== -1) {
+    taskList[i].completed = false;
+  }
+  renderTasks(taskList);
+}
+
 function checkClickField(e) {
   if (e.target.tagName === 'INPUT') {
     onCompleteTask(e);
@@ -135,16 +181,28 @@ function sortingAlphabet() {
   });
   renderTasks(alphaTask);
 }
-const counter = () => {
+  const interestDoneTask = () => {
+    const cTask = taskList.filter(task => task.completed);
+    const count = document.getElementById('todosLeft');
+    const interest = Math.floor(cTask.length / taskList.length * 100);
+    if (taskList.length !== 0) {
+    count.innerText = `${cTask.length} / ${taskList.length} ( ${interest}% done) `;
+  } else { count.innerText = ``;
+    }
+  }
+ /*(active task account function)
+ const counter = () => {
    const tasksCounter =  taskList.filter(task=> !task.completed);
    const count = document.getElementById('todosLeft');
    const counterString = tasksCounter.length === 1 ? 'task' : 'tasks';
    count.innerText = `${tasksCounter.length} ${counterString} left`;
-}
+} */
 
 document.addEventListener('DOMContentLoaded', () => {
   inp.addEventListener('keyup', onCreateTask);
   document.querySelector('.todo-list').addEventListener('click', checkClickField);
+  document.querySelector('.todo-list').addEventListener('dblclick', onEditingTask );
+  document.querySelector('#comp').addEventListener('click', checkCompleteField);
   document.querySelector('.AllClear').addEventListener('click', AllClearTasks);
   document.getElementById('itemAll').addEventListener('click', sortingAllToDo);
   document.getElementById('itemActive').addEventListener('click', sortingActiveToDo);
@@ -152,5 +210,4 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('itemAlphabet').addEventListener('click', sortingAlphabet);
   document.getElementById('yes').addEventListener('click', DeleteTask);
   document.getElementById('no').addEventListener('click', noDeleteTask);
-
 });
