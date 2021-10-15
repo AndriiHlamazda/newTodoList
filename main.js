@@ -66,7 +66,7 @@ function onEditingTask(e) {
   renderTasks(taskList);
   const focusTask = document.querySelector('span[contentEditable="true"]');
   focusTask.focus();
-  focusTask.addEventListener('keyup', enterEditingTask);
+  focusTask.addEventListener('keypress', enterEditingTask);
 }
 
    function enterEditingTask(event) {
