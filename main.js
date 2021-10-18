@@ -46,12 +46,14 @@ function renderTasks(localTasks = []) {
       $tasks.innerHTML = activeTask.map(t => card(t)).join(' ');
   //    counter();
       interestDoneTask();
+      testHash();
     }
     const cTask = taskList.filter(task => task.completed);
     if (cTask.length >= 0) {
       compTask.innerHTML = cTask.map(t => card(t)).join(' ');
  //     counter();
       interestDoneTask();
+      testHash();
     }
   }
 }
@@ -137,9 +139,23 @@ function DeleteTask(){
 function noDeleteTask() {
   modal.classList.remove("open");
 }
- function sortingAllToDo() {
-   renderTasks(taskList);
- }
+// function sortingAllToDo() {
+//   renderTasks(taskList);
+ //}
+function testHash() {
+  const stringTask = JSON.stringify(taskList);
+  const codeTask = window.btoa(stringTask);
+  window.location.hash = '#' + codeTask;
+}
+function renderHash() {
+  const h = window.location.hash;
+  if (h.length !== 0) {
+    const h2 = h.substring(1);
+    const hash = window.atob(h2);
+    taskList = JSON.parse(hash);
+    renderTasks(taskList);
+  }
+}
 
 function sortingActiveToDo() {
   const ActiveToDo = taskList.filter(task => !task.completed);
@@ -204,10 +220,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('.todo-list').addEventListener('dblclick', onEditingTask );
   document.querySelector('#comp').addEventListener('click', checkCompleteField);
   document.querySelector('.AllClear').addEventListener('click', AllClearTasks);
-  document.getElementById('itemAll').addEventListener('click', sortingAllToDo);
+ // document.getElementById('itemAll').addEventListener('click', sortingAllToDo);
+ // document.getElementById('itemAll').addEventListener('click', renderHash);
   document.getElementById('itemActive').addEventListener('click', sortingActiveToDo);
   document.getElementById('itemCompleted').addEventListener('click', sortingCompToDo);
   document.getElementById('itemAlphabet').addEventListener('click', sortingAlphabet);
   document.getElementById('yes').addEventListener('click', DeleteTask);
   document.getElementById('no').addEventListener('click', noDeleteTask);
+  renderHash()
 });
