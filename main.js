@@ -142,16 +142,22 @@ function noDeleteTask() {
 // function sortingAllToDo() {
 //   renderTasks(taskList);
  //}
+function utf8_to_b64(str) {
+  return window.btoa(unescape(encodeURIComponent(str)));
+}
 function testHash() {
   const stringTask = JSON.stringify(taskList);
-  const codeTask = window.btoa(stringTask);
+  const codeTask = utf8_to_b64(stringTask);
   window.location.hash = '#' + codeTask;
+}
+function b64_to_utf8(str) {
+  return decodeURIComponent(escape(window.atob(str)));
 }
 function renderHash() {
   const h = window.location.hash;
   if (h.length !== 0) {
     const h2 = h.substring(1);
-    const hash = window.atob(h2);
+    const hash = b64_to_utf8(h2);
     taskList = JSON.parse(hash);
     renderTasks(taskList);
   }
