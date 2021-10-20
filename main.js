@@ -68,21 +68,34 @@ function onEditingTask(e) {
   renderTasks(taskList);
   const focusTask = document.querySelector('span[contentEditable="true"]');
   focusTask.focus();
+  document.getSelection().setBaseAndExtent(focusTask, 0, focusTask, focusTask.childNodes.length);
   focusTask.addEventListener('keypress', enterEditingTask);
-}
-
-   function enterEditingTask(event) {
-    if (event.keyCode === 13) {
-      event.preventDefault();
-      const focusTask = document.querySelector('span[contentEditable="true"]');
-      const id = event.target.getAttribute('data-id');
-      const i = taskList.findIndex(t => t.id === +id);
-       if (i !== -1) {
-        taskList[i].description = focusTask.innerHTML;
-        taskList[i].contentEditable = "false";
-       }
-        renderTasks(taskList);
+  focusTask.addEventListener('focusout', function (e) {
+    const focusTask = document.querySelector('span[contentEditable="true"]');
+    const id = e.target.getAttribute('data-id');
+    const i = taskList.findIndex(t => t.id === +id);
+    if (i !== -1) {
+      taskList[i].description = focusTask.innerHTML;
+      taskList[i].contentEditable = "false";
     }
+    renderTasks(taskList);
+
+  });
+}
+   function enterEditingTask(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        const focusTask = document.querySelector('span[contentEditable="true"]');
+        const id = event.target.getAttribute('data-id');
+        const i = taskList.findIndex(t => t.id === +id);
+        if (i !== -1) {
+          taskList[i].description = focusTask.innerHTML;
+          taskList[i].contentEditable = "false";
+        }
+        renderTasks(taskList);
+      }
+
+
   }
 function checkCompleteField(e) {
   if (e.target.tagName === 'I') {
@@ -159,6 +172,10 @@ function renderHash() {
     const h2 = h.substring(1);
     const hash = b64_to_utf8(h2);
     taskList = JSON.parse(hash);
+    const i = taskList.findIndex(t => t.contentEditable === 'true');
+    if (i !== -1) {
+      taskList[i].contentEditable = false;
+    }
     renderTasks(taskList);
   }
 }
@@ -227,7 +244,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('#comp').addEventListener('click', checkCompleteField);
   document.querySelector('.AllClear').addEventListener('click', AllClearTasks);
  // document.getElementById('itemAll').addEventListener('click', sortingAllToDo);
- // document.getElementById('itemAll').addEventListener('click', renderHash);
   document.getElementById('itemActive').addEventListener('click', sortingActiveToDo);
   document.getElementById('itemCompleted').addEventListener('click', sortingCompToDo);
   document.getElementById('itemAlphabet').addEventListener('click', sortingAlphabet);
